@@ -120,3 +120,77 @@ def clear_history():
 
     conn.commit()
     conn.close()
+def get_total_duration():
+    """
+    Returns total workout duration in seconds.
+    """
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT SUM(duration)
+        FROM workouts
+    """)
+
+    result = cursor.fetchone()[0]
+
+    conn.close()
+
+    return result if result else 0
+
+
+def get_latest_workouts(limit=10):
+    """
+    Returns latest workouts.
+    """
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT date, exercise, reps, duration, calories
+        FROM workouts
+        ORDER BY id DESC
+        LIMIT ?
+    """, (limit,))
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+def get_calorie_history():
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT date, calories
+        FROM workouts
+        ORDER BY id
+    """)
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+
+def get_exercise_distribution():
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT exercise, COUNT(*)
+        FROM workouts
+        GROUP BY exercise
+    """)
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
